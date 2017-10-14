@@ -44,7 +44,8 @@ TEST_CASE( "insert" ) {
 }
 
 TEST_CASE( "deserialize" ) {
-    std::vector<std::string> v = {",", "5,4,7,3,null,2,null,-1,null,9,", "1,null,2,3,"};
+    std::vector<std::string> v = {",", "5,4,7,3,null,2,null,-1,null,9,", "1,null,2,3,", 
+    "1,2,3,null,4,5,null,6,"};
     adm::ch03::BinaryTree<int> tree;
     for(auto s : v){
         tree = adm::ch03::BinaryTree<int>(s);

@@ -13,10 +13,14 @@ namespace adm{
                 TreeNode *left, *right;
                 TreeNode(const T &val): val(val), left(nullptr), right(nullptr){}
                 ~TreeNode(){
-                    if(left)
+                    if(left){
                         delete left;
-                    if(right)
+                        left = nullptr;
+                    }
+                    if(right){
                         delete right;
+                        right = nullptr;
+                    }
                 }
             };
         template<typename T>
@@ -71,6 +75,7 @@ namespace adm{
                             l = r + 1;
                         }
                     }
+                    // TODO: find out why the following line causes memory leak in valgrind
                     TreeNode<T> *root = new TreeNode<T>(std::stoi(children.front()));
                     nodes.push(root);
                     children.pop();

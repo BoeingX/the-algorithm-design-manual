@@ -4,6 +4,7 @@
 #include <stack>
 #include <queue>
 #include <string>
+#include <iostream>
 namespace adm{
     namespace ch03{
         template<typename T>
@@ -12,14 +13,10 @@ namespace adm{
                 TreeNode *left, *right;
                 TreeNode(const T &val): val(val), left(nullptr), right(nullptr){}
                 ~TreeNode(){
-                    if(left){
+                    if(left)
                         delete left;
-                        left = nullptr;
-                    }
-                    if(right){
+                    if(right)
                         delete right;
-                        right = nullptr;
-                    }
                 }
             };
         template<typename T>
@@ -60,12 +57,9 @@ namespace adm{
                         return -1;
                     return 1 + std::max(d1, d2);
                 }
-            public:
-                BinaryTree(): root_(nullptr){}
-                BinaryTree(const std::string &data){
+                TreeNode<T> *deserialize(const std::string &data){
                     if(data.size() == 1){
-                        root_ = nullptr;
-                        return;
+                        return nullptr;
                     }
                     std::queue<std::string> children;
                     std::queue<TreeNode<T> *> nodes;
@@ -77,8 +71,8 @@ namespace adm{
                             l = r + 1;
                         }
                     }
-                    root_ = new TreeNode<T>(std::stoi(children.front()));
-                    nodes.push(root_);
+                    TreeNode<T> *root = new TreeNode<T>(std::stoi(children.front()));
+                    nodes.push(root);
                     children.pop();
                     while(!nodes.empty()){
                         TreeNode<T> *t = nodes.front();
@@ -100,8 +94,28 @@ namespace adm{
                             }
                         }
                     }
+                    return root;
+                }
+            public:
+                BinaryTree(): root_(nullptr){}
+                BinaryTree(const std::string &data){
+                    root_ = deserialize(data); 
+                }
+                BinaryTree(const BinaryTree<T> &tree){
+                    std::string s = tree.serialize();
+                    root_ = deserialize(s); 
+                }
+                BinaryTree& operator= (const BinaryTree &tree){
+                    std::string s = tree.serialize();
+                    root_ = deserialize(s); 
+                    return *this;
                 }
                 ~BinaryTree(){
+                    clear();
+                }
+                void clear(){
+                    if(!root_)
+                        return;
                     delete root_;
                     root_ = nullptr;
                 }
@@ -142,7 +156,7 @@ namespace adm{
                 bool is_balanced(){
                     return is_balanced(root_) != -1;
                 }
-                std::string serialize(){
+                std::string serialize() const {
                     if(!root_)
                         return ",";
                     std::string s;
@@ -173,10 +187,6 @@ namespace adm{
                         }
                     }
                     return s;
-                }
-                void clear(){
-                    delete root_;
-                    root_ = nullptr;
                 }
             };
         template<typename T>

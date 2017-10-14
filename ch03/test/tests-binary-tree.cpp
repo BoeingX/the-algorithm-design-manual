@@ -13,10 +13,10 @@ TEST_CASE( "constructor" ) {
 
 TEST_CASE( "insert" ) {
     
-    adm::ch03::BST<int> bst;
 
     std::vector<int> v, v_ref;
 
+    adm::ch03::BST<int> bst;
     bst.clear();
     v = {3, 2, 1, 4, 5};
     for(auto n : v)
@@ -31,8 +31,8 @@ TEST_CASE( "insert" ) {
     REQUIRE(bst.min_element()->val == 1);
     REQUIRE(bst.max_element()->val == 5);
 
-    bst.clear();
     v = {1, 2, 3, 4, 5};
+    bst.clear();
     for(auto n : v)
         bst.insert(n);
     v_ref = {1, 2, 3, 4, 5};

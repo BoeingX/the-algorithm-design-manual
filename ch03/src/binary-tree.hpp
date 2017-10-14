@@ -2,6 +2,8 @@
 #include <cmath>
 #include <vector>
 #include <stack>
+#include <queue>
+#include <string>
 namespace adm{
     namespace ch03{
         template<typename T>
@@ -9,6 +11,16 @@ namespace adm{
                 T val;
                 TreeNode *left, *right;
                 TreeNode(const T &val): val(val), left(nullptr), right(nullptr){}
+                ~TreeNode(){
+                    if(left){
+                        delete left;
+                        left = nullptr;
+                    }
+                    if(right){
+                        delete right;
+                        right = nullptr;
+                    }
+                }
             };
         template<typename T>
             class BinaryTree{
@@ -50,8 +62,48 @@ namespace adm{
                 }
             public:
                 BinaryTree(): root_(nullptr){}
+                BinaryTree(const std::string &data){
+                    if(data.size() == 1){
+                        root_ = nullptr;
+                        return;
+                    }
+                    std::queue<std::string> children;
+                    std::queue<TreeNode<T> *> nodes;
+                    std::string s;
+                    for(size_t l = 0, r = 0; r < data.size(); r++){
+                        if(data[r] == ','){
+                            auto s = data.substr(l, r - l);
+                            children.push(s);
+                            l = r + 1;
+                        }
+                    }
+                    root_ = new TreeNode<T>(std::stoi(children.front()));
+                    nodes.push(root_);
+                    children.pop();
+                    while(!nodes.empty()){
+                        TreeNode<T> *t = nodes.front();
+                        nodes.pop();
+                        if(!children.empty()){
+                            s = children.front();
+                            children.pop();
+                            if(s != "null"){
+                                t->left = new TreeNode<T>(std::stoi(s));
+                                nodes.push(t->left);
+                            }
+                        }
+                        if(!children.empty()){
+                            s = children.front();
+                            children.pop();
+                            if(s != "null"){
+                                t->right = new TreeNode<T>(std::stoi(s));
+                                nodes.push(t->right);
+                            }
+                        }
+                    }
+                }
                 ~BinaryTree(){
-                    clear();
+                    delete root_;
+                    root_ = nullptr;
                 }
                 void set_root(TreeNode<T> *root){
                     root_ = root;
@@ -90,22 +142,40 @@ namespace adm{
                 bool is_balanced(){
                     return is_balanced(root_) != -1;
                 }
-                void clear(){
+                std::string serialize(){
                     if(!root_)
-                        return;
-                    std::stack<TreeNode<T> *> to_delete;
-                    to_delete.push(root_);
-                    while(!to_delete.empty()){
-                        TreeNode<T> *node = to_delete.top();
-                        to_delete.pop();
-                        if(node->left)
-                            to_delete.push(node->left);
-                        if(node->right)
-                            to_delete.push(node->right);
-                        delete node;
-                        node = nullptr;
+                        return ",";
+                    std::string s;
+                    std::queue<TreeNode<T> *> q, q2;
+                    size_t n_nodes = 0, n_nodes2 = 0;
+                    q.push(root_);
+                    n_nodes = 1;
+                    while(!q.empty()){
+                        TreeNode<T> *t = q.front();
+                        q.pop();
+                        if(t){
+                            n_nodes--;
+                            s += std::to_string(t->val) + ",";
+                            if(t->left)
+                                n_nodes2++;
+                            q2.push(t->left);
+                            if(t->right)
+                                n_nodes2++;
+                            q2.push(t->right);
+                        }
+                        else{
+                            if(n_nodes || n_nodes2)
+                                s += "null,";
+                        }
+                        if(q.empty()){
+                            std::swap(q, q2);
+                            std::swap(n_nodes, n_nodes2);
+                        }
                     }
-                    // if not set to nullptr, root_ is `dangling pointer`.
+                    return s;
+                }
+                void clear(){
+                    delete root_;
                     root_ = nullptr;
                 }
             };

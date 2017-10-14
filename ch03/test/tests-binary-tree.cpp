@@ -42,3 +42,12 @@ TEST_CASE( "insert" ) {
     REQUIRE(!bst.is_balanced());
 
 }
+
+TEST_CASE( "deserialize" ) {
+    std::vector<std::string> v = {",", "5,4,7,3,null,2,null,-1,null,9,", "1,null,2,3,"};
+    adm::ch03::BinaryTree<int> tree;
+    for(auto s : v){
+        tree = adm::ch03::BinaryTree<int>(s);
+        REQUIRE(tree.serialize() == s);
+    }
+}
